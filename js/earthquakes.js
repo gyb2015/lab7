@@ -52,11 +52,55 @@ gov.usgs.quakesUrl = 'https://soda.demo.socrata.com/resource/earthquakes.json?$$
 gov.usgs.quakes;
 
 //reference to our google map
+
 gov.usgs.quakesMap;
+
+//addQuakeMarkers()
+//parameters
+// - quakes (array) array of quake data objects
+// - map (google.maps.Map) Google map we can add markers to
+// no return value
+function addQuakeMarkers(quakes, map) {
+    
+    //loop over the quakes array and add a marker for each quake
+    var quake;      //current quake data
+    var idx;        //loop counter
+    var infoWindow; //InfoWindow for quake
+
+    for (idx = 0; idx < quakes.length; ++idx) {
+        quake = quakes[idx];
+        if (quake.location) {
+        	//assuming that the variable 'quake' is set to 
+			//the current quake object within the quakes array...
+	        quake.mapMarker = new google.maps.Marker({
+			    map: map,
+			    position: new google.maps.LatLng(quake.location.latitude, quake.location.longitude)
+			});
+			infoWindow = new google.maps.InfoWindow({
+			    content: new Date(quake.datetime).toLocaleString() + 
+			                ': magnitude ' + quake.magnitude + ' at depth of ' + 
+			                quake.depth + ' meters'
+			});
+			registerInfoWindow(map, quake.mapMarker, infoWindow);
+        }
+    }
+} //addQuakeMarkers()
+
+function registerInfoWindow(map, marker, infoWindow) {
+			    google.maps.event.addListener(marker, 'click', function(){
+
+			        infoWindow.open(map, marker);
+
+    });                
+} //registerInfoWindow()
+
+
+                    
 
 //AJAX Error event handler
 //just alerts the user of the error
 $(document).ajaxError(function(event, jqXHR, err){
     alert('Problem obtaining data: ' + jqXHR.statusText);
 });
+
 
